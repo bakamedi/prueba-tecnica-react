@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios';
+import { getOptions, submitForm } from './services/api';
 import './App.css'
 
 function App() {
@@ -12,14 +12,19 @@ function App() {
   
   useEffect(() => {
     // Modifica el codigo para traer las opciones del proyecto de flask usando axios
-    setDropdownData(['Option 1', 'Option 2', 'Option 3']);
+    getOptions()
+      .then(response => {
+        setDropdownData(response.data.options); // espera que el backend retorne { options: [...] }
+      })
+      .catch(error => {
+        console.error('Error fetching dropdown options:', error);
+      });
   }, []);
 
   // Función para manejar el submit del formulario
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validación básica
     const errors = {};
     if (!name) errors.name = "Name is required";
     if (!email) errors.email = "Email is required";
@@ -27,10 +32,22 @@ function App() {
 
     setFormErrors(errors);
 
-    // Si no hay errores, procesamos el formulario
     if (Object.keys(errors).length === 0) {
-      console.log('Form submitted successfully');
-      console.log({ name, email });
+      const formData = {
+        name,
+        email,
+        selectedOption,
+      };
+
+      submitForm(formData)
+        .then(response => {
+          console.log('Form submitted successfully', response.data);
+          alert('Form submitted!');
+        })
+        .catch(error => {
+          console.error('Error submitting form:', error);
+          alert('Error submitting form');
+        });
     }
   };
 
@@ -66,7 +83,18 @@ function App() {
 
         {/* Dropdown */}
         <div style={{ marginBottom: '10px' }}>
-          {/* Aqui agrega tu codigo del select usando el tag <select></select>, no valides formErrors  */}
+          <label htmlFor="dropdown">Select an option</label>
+          <select 
+            id="dropdown" 
+            value={selectedOption} 
+            onChange={(e) => setSelectedOption(e.target.value)} 
+            style={{ width: '100%', padding: '8px' }}
+          >
+            <option value="">-- Select --</option>
+            {dropdownData.map((opt, index) => (
+              <option key={index} value={opt}>{opt}</option>
+            ))}
+          </select>
         </div>
 
         {/* Submit button */}
