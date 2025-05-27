@@ -1,7 +1,7 @@
 // src/api/api.js
 import axios from 'axios';
 
-const BASE_URL = 'http://127.0.0.1:5000';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 // Obtener opciones del backend
 export const getOptions = () => {

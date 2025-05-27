@@ -14,7 +14,7 @@ function App() {
     // Modifica el codigo para traer las opciones del proyecto de flask usando axios
     getOptions()
       .then(response => {
-        setDropdownData(response.data.options); // espera que el backend retorne { options: [...] }
+        setDropdownData(response.data); // espera que el backend retorne { options: [...] }
       })
       .catch(error => {
         console.error('Error fetching dropdown options:', error);
@@ -36,9 +36,8 @@ function App() {
       const formData = {
         name,
         email,
-        selectedOption,
+        "userType": selectedOption,
       };
-
       submitForm(formData)
         .then(response => {
           console.log('Form submitted successfully', response.data);
